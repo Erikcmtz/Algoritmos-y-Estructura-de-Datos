@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Función para encontrar el máximo valor en un vector
+int findMax(int arr[], int n) {
+    int max = arr[0];
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    return max;
+}
+
+// Algoritmo de ordenación por cubos (bucket sort)
+void bucketSort(int arr[], int n) {
+    const int max_value = findMax(arr, n) + 1;
+    int buckets[max_value];
+    for (int i = 0; i < max_value; i++) {
+        buckets[i] = 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        buckets[arr[i]]++;
+    }
+
+    int index = 0;
+    for (int i = 0; i < max_value; i++) {
+        while (buckets[i] > 0) {
+            arr[index++] = i;
+            buckets[i]--;
+        }
+    }
+}
+
+// Algoritmo de selección
+void selectionSort(int arr[], int n) {
+    int i, j, minIndex, temp;
+    for (i = 0; i < n - 1; i++) {
+        minIndex = i;
+        for (j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        temp = arr[i];
+        arr[i] = arr[minIndex];
+        arr[minIndex] = temp;
+    }
+}
+
+int main() {
+    int sizes[] = {10, 100, 1000, 10000, 100000, 1000000};
+    int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+    for (int i = 0; i < num_sizes; i++) {
+        int size = sizes[i];
+        int *arr = (int *)malloc(sizeof(int) * size);
+
+        // Inicializar el vector con números aleatorios
+        srand(time(NULL));
+        for (int j = 0; j < size; j++) {
+            arr[j] = rand();
+        }
+
+        // Copiar el vector para comparar los resultados de ambos algoritmos
+        int *arr_copy = (int *)malloc(sizeof(int) * size);
+        for (int j = 0; j < size; j++) {
+            arr_copy[j] = arr[j];
+        }
+
+        // Medir el tiempo de ejecución de Bucket Sort
+        clock_t start_time = clock();
+        bucketSort(arr, size);
+        clock_t end_time = clock();
+        double bucket_sort_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+        // Medir el tiempo de ejecución de Selection Sort
+        start_time = clock();
+        selectionSort(arr_copy, size);
+        end_time = clock();
+        double selection_sort_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+        // Verificar si los vectores están ordenados correctamente
+        for (int j = 0; j < size - 1; j++) {
+            if (arr[j] > arr[j + 1] || arr_copy[j] != arr[j]) {
+                printf("Error: Los algoritmos de ordenación no produjeron resultados idénticos.\n");
+                break;
+            }
+        }
+
+        // Imprimir los tiempos de ejecución
+        printf("Tamaño del vector: %d\n", size);
+        printf("Bucket Sort: %.6f segundos\n", bucket_sort_time);
+        printf("Selection Sort: %.6f segundos\n", selection_sort_time);
+
+        // Liberar la memoria
+        free(arr);
+        free(arr_copy);
+    }
+
+    return 0;
+}
