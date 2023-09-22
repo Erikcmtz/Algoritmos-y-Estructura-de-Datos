@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+struct Elemento {
+    int valor;
+};
+
+int compararElementos(const void *a, const void *b) {
+    return ((struct Elemento *)a)->valor - ((struct Elemento *)b)->valor;
+}
+
+void insertionSort(struct Elemento arr[], int izquierda, int derecha) {
+    for (int i = izquierda + 1; i <= derecha; i++) {
+        struct Elemento temp = arr[i];
+        int j = i - 1;
+        while (j >= izquierda && arr[j].valor > temp.valor) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = temp;
+    }
+}
+
+void merge(struct Elemento arr[], int izquierda, int medio, int derecha) {
+    int n1 = medio - izquierda + 1;
+    int n2 = derecha - medio;
+
+    struct Elemento Izquierda[n1], Derecha[n2];
+
+    for (int i = 0; i < n1; i++)
+        Izquierda[i] = arr[izquierda + i];
+    for (int i = 0; i < n2; i++)
+        Derecha[i] = arr[medio + 1 + i];
+
+    int i = 0;
+    int j = 0;
+    int k = izquierda;
+
+    while (i < n1 && j < n2) {
+        if (Izquierda[i].valor <= Derecha[j].valor) {
+            arr[k] = Izquierda[i];
+            i++;
+        } else {
+            arr[k] = Derecha[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = Izquierda[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = Derecha[j];
+        j++;
+        k++;
+    }
+}
+
+void timSort(struct Elemento arr[], int n) {
+    int RUN = 32;
+
+    for (int i = 0; i < n; i += RUN) {
+        insertionSort(arr, i, (i + RUN - 1) < (n - 1) ? (i + RUN - 1) : (n - 1));
+    }
+
+    for (int size = RUN; size < n; size = 2 * size) {
+        for (int izquierda = 0; izquierda < n; izquierda += 2 * size) {
+            int medio = izquierda + size - 1;
+            int derecha = (izquierda + 2 * size - 1) < (n - 1) ? (izquierda + 2 * size - 1) : (n - 1);
+            if (medio < derecha) {
+                merge(arr, izquierda, medio, derecha);
+            }
+        }
+    }
+}
+
+int main() {
+    int n;
+    printf("Ingrese la cantidad de elementos (max 1000000): ");
+    scanf("%d", &n);
+
+    if (n < 1 || n > 1000000) {
+        printf("Cantidad de elementos fuera de rango.\n");
+        return 1;
+    }
+
+    struct Elemento *arr = (struct Elemento *)malloc(n * sizeof(struct Elemento));
+
+    if (arr == NULL) {
+        printf("Error en la asignación de memoria.\n");
+        return 1;
+    }
+
+    srand(time(NULL));
+
+    for (int i = 0; i < n; i++) {
+        arr[i].valor = rand();
+    }
+
+    clock_t inicio = clock();
+
+    int fragmento = 10000; // Tamaño del fragmento
+    for (int i = 0; i < n; i += fragmento) {
+        int final = (i + fragmento - 1 < n - 1) ? (i + fragmento - 1) : (n - 1);
+        timSort(arr + i, final - i + 1);
+    }
+
+    // Combinar los fragmentos ordenados
+    for (int fragmentoActual = fragmento; fragmentoActual < n; fragmentoActual *= 2) {
+        for (int izquierda = 0; izquierda < n; izquierda += 2 * fragmentoActual) {
+            int medio = izquierda + fragmentoActual - 1;
+            int derecha = (izquierda + 2 * fragmentoActual - 1 < n - 1) ? (izquierda + 2 * fragmentoActual - 1) : (n - 1);
+            if (medio < derecha) {
+                merge(arr, izquierda, medio, derecha);
+            }
+        }
+    }
+
+    clock_t fin = clock();
+    double tiempo = (double)(fin - inicio) / CLOCKS_PER_SEC;
+
+    printf("Tiempo de ejecución: %f segundos\n", tiempo);
+
+    free(arr);
+
+    return 0;
+}
