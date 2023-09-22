@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <time.h>       // for clock_t, clock(), CLOCKS_PER_SEC
+#include <unistd.h>     // for sleep()
+#include <stdlib.h>
+#include<iostream>
+#include<conio.h>
+
+#define N 1000000 //aquí se le cambia
+
+using namespace std;
+ 
+// función principal para encontrar el tiempo de ejecución de un programa en C
+int main()
+{
+    // para almacenar el tiempo de ejecución del código
+    double time_spent = 0.0;
+ 
+    clock_t begin = clock();
+ 
+    // hacer algunas cosas aquí
+    sleep(3);
+
+    int* vector = (int*)malloc(N * sizeof(int));  // Asignación dinámica de memoria para el vector
+    //int aux;
+
+    if (vector == NULL) {
+        printf("Error: No se pudo asignar memoria.\n");
+        return 1;
+    }
+
+    srand(time(NULL));
+    // Genera y llena el vector con números aleatorios
+    for (int i = 0; i < N; i++) {
+        vector[i] = rand() % 100;
+        //printf(" %d \n", vector[i] );
+    }
+    
+	//BURBUJA
+	int i,j,aux;
+	
+	for(i=0;i<N;i++){
+		for(j=0;j<N-1;j++){
+			if(vector[j] > vector[j+1]){
+				aux = vector[j];
+				vector[j] = vector[j+1];
+				vector[j+1] = aux;
+			}
+		}
+	}
+	
+	printf("\nPROCESO FINALIZADO\n");
+
+    clock_t end = clock();
+ 
+    // calcula el tiempo transcurrido encontrando la diferencia (end - begin) y
+    // dividiendo la diferencia por CLOCKS_PER_SEC para convertir a segundos
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+ 
+    printf("The elapsed time is %f seconds", time_spent);
+ 	getch();
+    return 0;
+}
