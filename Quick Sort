@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define N 100000 
+
+void swap(int *indice_i, int *indice_j) {
+    int temp = *indice_i;
+    *indice_i = *indice_j;
+    *indice_j = temp;
+}
+
+void seleccionar(int vector[], int inicio, int fin) {
+    int N_vector = (fin - inicio) + 1;
+
+    int mid;
+    if (N_vector % 2 == 0)
+        mid = (N_vector / 2) - 1 + inicio;
+    else
+        mid = (N_vector / 2) + inicio;
+
+    swap(&vector[fin], &vector[mid]);
+}
+
+int der(int vector[], int indice_i, int fin) {
+    int indice_j = fin;
+    while(indice_j > indice_i && vector[indice_j] >= vector[fin])
+        indice_j--;
+    return indice_j;
+}
+
+int izq(int vector[], int indice_i, int fin) {
+    while(vector[indice_i] < vector[fin])
+        indice_i++;
+    return indice_i;
+}
+
+int place(int vector[], int indice_i, int fin) {
+    int indice_j = fin;
+    while (indice_j > indice_i) {
+        indice_i = izq(vector, indice_i, fin);
+        indice_j = der(vector, indice_i, fin);
+        if (vector[indice_i] > vector[indice_j])
+            swap(&vector[indice_i], &vector[indice_j]);
+    }
+    swap(&vector[indice_i], &vector[fin]);
+    return indice_i;
+}
+
+void quickSort(int vector[], int inicio, int fin) {
+    if (inicio < fin) {
+        seleccionar(vector, inicio, fin);
+        int posicion = place(vector, inicio, fin);
+        quickSort(vector, inicio, posicion - 1);
+        quickSort(vector, posicion + 1, fin);
+    }
+}
+
+int rdtsc() {
+    __asm__ __volatile__("rdtsc");
+}
+
+void aleatorio(int vector[], int size) {
+    for (int i = 0; i < size; i++) {
+        srand(rdtsc());
+        int positive = rand() % 2;
+        int number = rand() % 1000;
+        if (positive)
+            vector[i] = number;
+        else
+            vector[i] = -1 * number;
+    }
+}
+
+void tiempo(clock_t inicio, clock_t fin) {
+    double tiempo = ((double) (fin - inicio)) / CLOCKS_PER_SEC;
+    printf("Tiempo de ejecucion: %f segundos\n", tiempo);
+}
+
+int main(int argc, char const *argv[]) {
+    int* vector = (int*)malloc(N * sizeof(int));
+    if (vector == NULL) {
+        fprintf(stderr, "Error\n");
+        return EXIT_FAILURE;
+    }
+
+    aleatorio(vector, N);
+
+    int inicio = 0;
+    int fin = N - 1;
+
+    clock_t inicio_time = clock();
+    quickSort(vector, inicio, fin);
+    
+    clock_t fin_time = clock();
+
+    tiempo(inicio_time, fin_time);
+
+    free(vector);
+    return 0;
+}
