@@ -1,0 +1,190 @@
+HEADER FILE/ Biblioteca
+
+#ifndef SEARCHALG_H
+#define SEARCHALG_H
+
+void tiempo(clock_t inicio, clock_t fin);
+void bubble(int v[], int n);
+int lineal(int v[], int n, int find);
+int binaria(int v[],int inicio,int fin,int find);
+int indexada(int v[],int n, int find);
+int interpol(int v[], int inicio, int fin, int find);
+int sentinel (int v[], int n, int find); 
+#endif
+
+------------------------------------------------------
+
+IMPLEMENTACIÓN
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "SearchAlg.h"
+
+void bubble(int v[], int n){
+    int swap;
+    for(int i=0;i<n;i++)
+        for(int j=0;j<n-1;j++)
+            if(v[j]>v[j+1])
+            {
+                swap=v[j];
+                v[j]=v[j+1];
+                v[j+1]=swap;
+            }
+}
+
+int lineal(int v[], int n, int find){
+	   for(int i=0;i<n;i++)
+        if(v[i]==find)
+            return i;
+         
+		
+    return -1;
+    
+}
+
+int binaria(int v[], int inicio, int fin, int find) {
+    int comp = 0;  // Inicializamos el contador de comparaciones
+
+    while (inicio <= fin) {
+        int mid = inicio + (fin - inicio) / 2;  // Calculamos la mitad
+        comp++;  // Incrementamos el contador de comparaciones
+
+        if (v[mid] == find) {
+        	        printf("\n Comparaciones: %d\n", comp);
+            return mid;
+        } else if (find > v[mid]) {
+            inicio = mid + 1;
+        } else {
+            fin = mid - 1;
+        }
+       
+    }
+
+    return -1;
+}
+
+int indexada(int v[],int n, int find){
+int indices[n],elementos[n], i, set=0;
+    int inicio, fin,ind=0;   // inicio y fin de rango de busqueda, ind es indices deindices y elementos
+
+    for(int i=0;i<n;i+=3)
+    {
+        indices[ind]=i;
+        elementos[ind]=v[i];
+        ind++;
+    }
+    //verificar si el valor buscado esta dentro del arreglo
+    if(find<v[0] || find>v[n-1])
+        return -1;
+    else
+    {
+        for(int i=1;i<=ind;i++)
+            if(find<=elementos[i])
+            {
+                //generamos rango de busqueda
+                inicio=indices[i-1]; //indice anterior
+                fin=indices[i]; //inide actual
+                set=1;
+                
+                break;
+            }
+    }
+    if(set==0)
+    {
+        inicio=indices[i];
+        fin=n-1;
+    }
+    for(i=inicio;i<fin;i++)
+    {
+        if(find==v[i])
+       
+            return i;
+    }
+   
+    return -1;
+}	
+
+int interpol(int v[], int inicio, int fin, int find){
+	int pos; //posición aproximada del valor
+    while(inicio<=fin && find>=v[inicio] && find<=v[fin]) {
+
+        pos=inicio+((find-v[inicio])*(fin-inicio)/(v[fin]-v[inicio]));
+        if(find==v[pos])
+            return pos;
+        else if (find<v[pos])
+            fin=pos-1;
+        else
+            inicio=pos+1;
+    }
+    
+    return -1;  
+}
+
+int sentinel (int v[], int n, int find) {
+    int final = v[n - 1]; 
+    v[n - 1] = find; 
+    int i = 0; 
+    while (v[i] != find) { 
+        i++; 
+    } 
+    if (i < n - 1 || v[n - 1] == find) { 
+
+        return i; 
+    } 
+    else { 
+        return -1;
+    }
+}
+
+void tiempo(clock_t inicio, clock_t fin) {
+    double tiempo = ((double) (fin - inicio)) / CLOCKS_PER_SEC;
+    printf("\nTiempo de ejecucion: %f segundos\n", tiempo);
+}
+
+------------------------------------------------------------------
+
+MAIN
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "SearchAlg.h"
+
+
+int main(){
+int n = 10; //tamaño del arreglo
+int v[n];
+int find= 0; //valor a buscar
+
+    // Genera y llena el vector con números aleatorios
+    srand(1);
+    for (int i = 0; i < n; i++) {
+        v[i] = rand() % 100;
+       //printf(" %d ", v[i] ); //imprime el arreglo aleatorio de n numeros
+      
+    } 
+clock_t inicio_time = clock();    
+//int indice = lineal(v,n,find); //comparaciones es find + 1 para lineal y sentinel.
+int indice = sentinel (v,  n, find);
+
+bubble(v,n);{
+	
+printf("\n\n");					//imprime el arreglo
+    for (int k=0; k<n;k++){			// ya ordenado
+    	//printf(" %d ", v[k]);
+		   } 
+		      
+		}
+//int indice = binaria(v, 0, n-1, find);
+//int indice = indexada(v, n, find);
+//int indice = interpol(v, 0, n-1, find);
+  if(indice!=-1)
+        printf("\nEl valor esta en: %d",indice);
+    else
+        printf("\nEl valor no se encuentra en la lista");
+  
+    clock_t fin_time = clock();
+tiempo(inicio_time, fin_time);
+return 0;
+}
