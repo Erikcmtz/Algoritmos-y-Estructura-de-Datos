@@ -1,6 +1,6 @@
 //VERSION FINAL...
-
-//LIBRERÕAS A OCUPAR:
+// TEXTO UTILIZADO COMO EJEMPLO ( he traido paz libertad justicia y seguridad a mi nuevo imperio )
+//LIBRER√çAS A OCUPAR:
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,11 +8,11 @@
 
 //ESTRUCTURAS:
 
-// ESTRUCTURA PARA HACER EL ¡RBOL TIPO ESTRUCTURA - HUFFMAN:
+// ESTRUCTURA PARA HACER EL √ÅRBOL TIPO ESTRUCTURA - HUFFMAN:
 typedef struct Node {
     char car; ///caracter
     int ocu; ///ocurrencia
-    struct Node *izquierda; // Leemos un 0 descendemos un nivel del ·rbol posicion·ndonos en su hijo IZQUIERDO
+    struct Node *izquierda; // Leemos un 0 descendemos un nivel del √°rbol posicion√°ndonos en su hijo IZQUIERDO
     struct Node *derecha; // Leemos un 1 descendemos un nivel para posicionarnos en su hijo DERECHO
 } Node;
 
@@ -36,7 +36,7 @@ void decodificar(Node *root, char ectex[], FILE *decodedFile);
 char *arrToString(int aglo[], int n);
 
 int main() {
-    char filename[200]; //ARREGLO CON TAMA—O DE LETRAS PARA EL ARCHIVO
+    char filename[200]; //ARREGLO CON TAMA√ëO DE LETRAS PARA EL ARCHIVO
     
     printf("Ingrese el nombre del archivo(.txt) a codificar: "); //SE CREA EL 1er ARCHIVO 
 	scanf("%s", filename);
@@ -75,7 +75,7 @@ while(fgets(tex, 500 , file) !=NULL){
         }
     }
 
-    // SE CREA EL ¡RBOL A PARTIR DE LA LISTA ENLAZADA
+    // SE CREA EL √ÅRBOL A PARTIR DE LA LISTA ENLAZADA
     Node *root = Tree(&list);
 
     // SE IMPRIMEN LOS VALORES HUFFMAN - SE GUARDAN EN EL 2do ARCHIVO
@@ -119,7 +119,7 @@ while(fgets(tex, 500 , file) !=NULL){
     return 0;
 }
 
-//CONSTRUCCION DEL ¡RBOL HUFFMAN
+//CONSTRUCCION DEL √ÅRBOL HUFFMAN
 Node *Tree(ListNode **list) {
     while (*list != NULL && (*list)->next != NULL) {
         Node *left = (*list)->node;
@@ -162,7 +162,7 @@ ListNode *insertSorted(ListNode *list, Node *newNode) {
     return list; //REGRESA LA LISTA
 }
 
-//IMPRESION DEL ¡RBOL HUFFMAN
+//IMPRESION DEL √ÅRBOL HUFFMAN
 void print(Node *root, int aglo[], int top, char table[][500]) {
     if (root->izquierda) {
         aglo[top] = 0;
@@ -216,4 +216,3 @@ void decodificar(Node *root, char ectex[], FILE *decodedFile) {
         i++;
     }
 }
-
